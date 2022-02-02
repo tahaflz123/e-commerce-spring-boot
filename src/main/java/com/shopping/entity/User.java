@@ -33,9 +33,9 @@ public class User implements UserDetails {
 	
 	private Boolean accountExpired;
 	
-	private Boolean locked;
+	private Boolean locked = false;
 	
-	private Boolean enabled;
+	private Boolean enabled = true;
 	
 	private Boolean credentialsExpired;
 
