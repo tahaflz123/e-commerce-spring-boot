@@ -14,20 +14,17 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void register(RegistrationRequest request) {
+	public Long register(RegistrationRequest request) {
 		Boolean existsEmail = this.userRepository.existsByEmail(request.getEmail());
 		if(existsEmail) {
 			throw new AuthenticationException("Email is valid");
 		}
-		
 		User user = new User();
 		user.setName(request.getName());
 		user.setSurname(request.getSurname());
 		user.setUsername(request.getEmail());
 		user.setPassword(request.getPassword());
-		
-
-		this.userRepository.save(user);
+		return this.userRepository.save(user).getId();
 	}
 	
 	

@@ -17,7 +17,7 @@ public class UserController {
 	private UserService userService;
 	
 	@PostMapping("/register")
-	public void register(@RequestBody RegistrationRequest request) {
-		this.userService.register(request);
+	public Long register(@RequestBody RegistrationRequest request) {
+		return this.userService.register(request);
 	}
 }
