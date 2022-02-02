@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.shopping.model.auth.AuthRequest;
 import com.shopping.model.auth.RegistrationRequest;
 import com.shopping.service.UserService;
 
@@ -20,4 +21,10 @@ public class UserController {
 	public Long register(@RequestBody RegistrationRequest request) {
 		return this.userService.register(request);
 	}
+	
+	@PostMapping("/login")
+	public String login(@RequestBody AuthRequest request) {
+		return this.userService.login(request);
+	}
+	
 }
