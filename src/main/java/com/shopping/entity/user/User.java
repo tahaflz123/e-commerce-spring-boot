@@ -1,26 +1,27 @@
-package com.shopping.entity;
+package com.shopping.entity.user;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import lombok.Setter;
 
 @Entity
 @Table(name = "user")
 public class User implements UserDetails {
 
 	@Id
-	@SequenceGenerator(name = "user-sequence",allocationSize = 1)
-	@GeneratedValue(generator = "user-sequence",strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 	
 	private String name;
@@ -29,21 +30,28 @@ public class User implements UserDetails {
 	
 	private String email;
 	
+	@Enumerated(EnumType.STRING)
+	private UserRole userRole;
+	
 	private String password;
 	
-	private Boolean accountExpired;
+	private Date createdDate;
+	
+	private Boolean accountExpired = false;
 	
 	private Boolean locked = false;
 	
 	private Boolean enabled = true;
 	
-	private Boolean credentialsExpired;
+	private Boolean credentialsExpired = false;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		 SimpleGrantedAuthority authority =
+	                new SimpleGrantedAuthority(userRole.name());
+	        return Collections.singletonList(authority);
 	}
-
+	
 	@Override
 	public String getPassword() {
 		return this.password;
@@ -76,6 +84,24 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	
+	public UserRole getUserRole() {
+		return userRole;
+	}
+
+
+	public void setUserRole(UserRole userRole) {
+		this.userRole = userRole;
+	}
+
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	public String getName() {
