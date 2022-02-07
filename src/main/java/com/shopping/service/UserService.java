@@ -1,22 +1,17 @@
 package com.shopping.service;
 
-import java.security.Key;
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.shopping.config.JwtService;
-import com.shopping.entity.User;
+import com.shopping.entity.user.User;
+import com.shopping.entity.user.UserRole;
 import com.shopping.exception.AuthenticationException;
 import com.shopping.model.auth.AuthRequest;
 import com.shopping.model.auth.RegistrationRequest;
 import com.shopping.repository.UserRepository;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class UserService {
@@ -26,9 +21,9 @@ public class UserService {
 	private JwtService jwtService;
 
 	@Autowired
-	public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
+	public UserService(UserRepository userRepository, JwtService jwtService,BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 	}
 
@@ -42,20 +37,30 @@ public class UserService {
 		user.setSurname(request.getSurname());
 		user.setUsername(request.getEmail());
 		user.setPassword(this.passwordEncoder.encode(request.getPassword()));
+		user.setUserRole(UserRole.USER);
 		return this.userRepository.save(user).getId();
 	}
 
 	public String login(AuthRequest request) {
 		User user = this.userRepository.findByEmail(request.getEmail());
-		if(!this.passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new AuthenticationException("Given email and password not matches");
+		if(user == null) {
+			throw new AuthenticationException("Given email and password not matches.");
 		}
-		
+		if(!this.passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+			throw new AuthenticationException("Given email and password not matches.");
+		}
 		String token = this.jwtService.createToken(user);
-		
-		
-		
 		return token;
+	}
+	
+	
+	public User profile() {
+		return this.getLoggedInUser();
+	}
+	
+	public User getLoggedInUser() {
+		User user = this.userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+		return user;
 	}
 	
 	
