@@ -7,7 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.shopping.entity.User;
+import com.shopping.entity.user.User;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,7 +28,15 @@ public class JwtService{
 	
 	
 	public Authentication parseToken(String token) {
-		String subject = Jwts.parserBuilder().setSigningKey(this.getSignKey()).build().parseClaimsJws(token).getBody().getSubject();
+		String subject;
+		if(token == null) {
+			return null;
+		}
+		if(token.startsWith("Bearer")) {
+			subject = Jwts.parserBuilder().setSigningKey(this.getSignKey()).build().parseClaimsJws(token.substring(7)).getBody().getSubject();
+		}else {
+			subject = Jwts.parserBuilder().setSigningKey(this.getSignKey()).build().parseClaimsJws(token).getBody().getSubject();
+		}
 		System.err.println(subject);
 		return new UsernamePasswordAuthenticationToken(subject, null, null);
 		 
@@ -36,7 +44,7 @@ public class JwtService{
 	
 	
 	public Key getSignKey() {
-		return Keys.hmacShaKeyFor(new String("mysecurekey").getBytes());
+		return Keys.hmacShaKeyFor(new String("mysecurekeymysecurekeymysecurekeymysecurekeymysecurekeymysecurekey").getBytes());
 	}
 	
 	
