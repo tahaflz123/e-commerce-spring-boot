@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
@@ -16,19 +17,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Configuration
 public class JWTFilter extends OncePerRequestFilter {
 
+	Logger logger = Logger.getLogger(JWTFilter.class);
+	
 	@Autowired
 	private JwtService jwtService;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String token = request.getHeader("Authorization").substring(7);
+		String token = request.getHeader("Authorization");
 		Authentication authentication = this.jwtService.parseToken(token);
 
 		if(authentication != null) {
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
-		
+		filterChain.doFilter(request, response);
 	}
 
 }
