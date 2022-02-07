@@ -1,4 +1,4 @@
-package com.shopping.entity;
+package com.shopping.entity.user;
 
 public enum UserRole {
 	ADMIN,
