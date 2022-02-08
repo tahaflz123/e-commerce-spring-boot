@@ -62,6 +62,10 @@ public class UserService {
 		User user = this.userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 		return user;
 	}
+
+	public User getUserById(Long id) {
+		return this.userRepository.findById(id).get();
+	}
 	
 	
 	
