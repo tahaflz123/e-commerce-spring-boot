@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.shopping.entity.product.Category;
 import com.shopping.entity.product.Product;
 import com.shopping.entity.user.User;
+import com.shopping.exception.ProductException;
 import com.shopping.model.product.ProductCreateRequest;
 import com.shopping.repository.ProductRepository;
 
@@ -89,6 +90,11 @@ public class ProductService {
 
 	public List<Product> getAllProducts() {
 		return this.productRepository.findAll();
+	}
+	
+	public Boolean existsById(Long id) {
+		Boolean exists = this.productRepository.existsById(id);
+		return exists;
 	}
 	
 }
