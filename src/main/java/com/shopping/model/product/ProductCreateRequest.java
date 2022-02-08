@@ -12,6 +12,8 @@ public class ProductCreateRequest {
 	
 	private Category category;
 	
+	private Integer stock;
+	
 	private Double price;
 	
 	private String about;
