@@ -30,6 +30,8 @@ public class Product {
 	
 	private String name;
 	
+	private Integer stock;
+	
 	@Enumerated(EnumType.STRING)
 	private Category category;
 	
