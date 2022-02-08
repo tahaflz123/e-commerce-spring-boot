@@ -2,10 +2,13 @@ package com.shopping.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.shopping.entity.product.Category;
 import com.shopping.entity.product.Product;
 import com.shopping.entity.user.User;
 import com.shopping.model.product.ProductCreateRequest;
@@ -14,6 +17,8 @@ import com.shopping.repository.ProductRepository;
 @Service
 public class ProductService {
 
+	Logger logger = Logger.getLogger(ProductService.class);
+	
 	private ProductRepository productRepository;
 	private UserService userService;
 	
@@ -33,6 +38,7 @@ public class ProductService {
 		product.setAbout(request.getAbout());
 		product.setCategory(request.getCategory());
 		product.setCreatedDate(new Date());
+		product.setStock(request.getStock());
 		product.setName(request.getName());
 		product.setPrice(request.getPrice());
 		
@@ -68,6 +74,21 @@ public class ProductService {
 	public List<Product> searchProduct(String q) {
 		List<Product> products = this.productRepository.search(q);
 		return products;
+	}
+
+
+
+	public List<Product> getProductsByCategoryAndName(Category category,String q) {
+		if(q != null) {
+			this.logger.info("Param 'q' not null!");
+			return this.productRepository.findAllByCategoryAndName(category.name(), q);
+		}
+		this.logger.info("Param 'q' is null!");
+		return this.productRepository.findAllByCategoryName(category.name());
+	}
+
+	public List<Product> getAllProducts() {
+		return this.productRepository.findAll();
 	}
 	
 }
