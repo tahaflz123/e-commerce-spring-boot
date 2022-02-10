@@ -1,19 +1,16 @@
 package com.shopping.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shopping.entity.order.Order;
 import com.shopping.entity.product.Product;
 import com.shopping.entity.user.User;
-import com.shopping.exception.AuthenticationException;
 import com.shopping.exception.OrderException;
 import com.shopping.exception.ProductException;
-import com.shopping.model.order.OrderResponse;
-import com.shopping.model.order.UserOrdersResponse;
 import com.shopping.repository.OrderRepository;
 
 @Service
@@ -23,79 +20,93 @@ public class OrderService {
 	private UserService userService;
 	private ProductService productService;
 	
+	@Autowired
 	public OrderService(OrderRepository orderRepository, UserService userService, ProductService productService) {
 		this.orderRepository = orderRepository;
 		this.userService = userService;
 		this.productService = productService;
 	}
 	
-	public UserOrdersResponse getUserOrders() {
+	public List<Order> getUserOrders() {
 		User user = this.userService.getLoggedInUser();
-		
-		List<Order> order = this.orderRepository.findAllByOrdererUserId(user.getId());
-		List<Product> products = new ArrayList<Product>();
-		ArrayList<Long> productIds = new ArrayList<Long>();
-		
-		for(Order o : order) {
-			productIds.add(o.getProductId());
-		}
-		for(Long id : productIds) {
-			products.add(this.productService.getProductById(id));
-		}
-		
-		UserOrdersResponse userOrdersResponse = new UserOrdersResponse();
-		userOrdersResponse.setOrders(order);
-		userOrdersResponse.setProducts(products);
-		
-		
-		
-		return userOrdersResponse;
+		List<Order> orders = this.orderRepository.findAllByUser(user);
+		return orders;
 	}
 
-	public Long orderProduct(Long id) {
-		Boolean exists = this.productService.existsById(id);
-		if(!exists) {
-			throw new ProductException("Product is not found with following id = " + id);
+	public Long orderProduct(Long id,Integer amount) {
+		if(amount == null || amount == 0) {
+			amount = 1;
 		}
+		if(amount < 0) {
+			throw new ProductException("amount must be greater than 0");
+		}
+		
+		
+		Product product = this.productService.getProductById(id);
+		if(product == null)
+			throw new ProductException("Product is not found with following id = " + id);
+        
+		if(product.getStock() == 0)
+        	throw new ProductException("out of stock");
+		
 		User user = this.userService.getLoggedInUser();
 		
-		Boolean ordered = this.orderRepository.existsByProductIdAndOrdererUserId(id,user.getId());
-		if(ordered) {
+		Boolean ordered = this.orderRepository.existsByProductAndUser(product,user);
+		if(ordered)
 			throw new OrderException("Already you are ordered this product!");
-		}
 		
+		
+		if(user.getWallet() < (product.getPrice() * amount))
+			throw new OrderException("Insufficient balance!");
+		
+	
 		Order order = new Order();
 		order.setOrderDate(new Date());
-		order.setOrdererUserId(user.getId());
-		order.setProductId(id);;
+		order.setUser(user);
+		order.setProduct(product);
+		order.setAmount(amount);
+		order.setTotalCost(product.getPrice() * (amount.doubleValue()));
+		
+		
+		List<Order> userOrders = user.getOrders();
+		userOrders.add(order);
+		user.setOrders(userOrders);
+		user.setWallet(user.getWallet() - (product.getPrice() * amount));
+		
+		this.userService.saveUser(user);
+		
+		product.setStock(product.getStock() - amount);
 		
 		return this.orderRepository.save(order).getId();
 	}
 	
-	public OrderResponse getOrder(Long id) {
+	public Order getOrder(Long id) {
 		Order order = this.orderRepository.findById(id).get();
 		if(order == null) {
 			throw new OrderException("Order didn't find");
 		}
 		
-		User user = this.userService.getUserById(order.getOrdererUserId());
-		if(user.getId() != this.userService.getLoggedInUser().getId()) {
-			throw new AuthenticationException("You can't access!");
-		}
-		
-		Product product = this.productService.getProductById(order.getProductId());
-		
-		OrderResponse orderResponse = new OrderResponse();
-		orderResponse.setOrder(order);
-		orderResponse.setProduct(product);
-		orderResponse.setUser(user);
-		return orderResponse;
+		return order;
 	}
 	
 	public Boolean existsOrderById(Long id) {
 		return this.orderRepository.existsById(id);
 	}
 	
+	public Boolean deleteOrder(Long id) {
+		User user = this.userService.getLoggedInUser();
+		Order order = this.orderRepository.findById(id).get();
+		
+		user.setWallet(user.getWallet() + order.getTotalCost());
+		Product product = order.getProduct();
+		product.setStock(product.getStock() + order.getAmount());
+
+		this.orderRepository.deleteById(id);
+		this.userService.saveUser(user);
+		this.productService.saveProduct(product);
+		
+		return true;
+	}
 	
 	
 }
