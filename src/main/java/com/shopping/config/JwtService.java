@@ -37,7 +37,6 @@ public class JwtService{
 		}else {
 			subject = Jwts.parserBuilder().setSigningKey(this.getSignKey()).build().parseClaimsJws(token).getBody().getSubject();
 		}
-		System.err.println(subject);
 		return new UsernamePasswordAuthenticationToken(subject, null, null);
 		 
 	}
