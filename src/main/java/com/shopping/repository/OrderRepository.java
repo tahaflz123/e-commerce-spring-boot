@@ -6,13 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.shopping.entity.order.Order;
+import com.shopping.entity.product.Product;
+import com.shopping.entity.user.User;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long>{
 
 
-	Boolean existsByProductIdAndOrdererUserId(Long productId, Long userId);
+	Boolean existsByProductAndUser(Product product, User user);
 
-	List<Order> findAllByOrdererUserId(Long userId);
+	List<Order> findAllByUser(User user);
 
 }
