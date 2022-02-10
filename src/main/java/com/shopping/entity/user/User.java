@@ -3,6 +3,7 @@ package com.shopping.entity.user;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,11 +11,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.shopping.entity.order.Order;
 
 @Entity
 @Table(name = "user")
@@ -29,6 +33,9 @@ public class User implements UserDetails {
 	private String surname;
 	
 	private String email;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Order> orders;
 	
 	private Double wallet;
 	
@@ -67,6 +74,14 @@ public class User implements UserDetails {
 		this.wallet = wallet;
 	}
 
+	public List<Order> getOrders() {
+		return orders;
+	}
+	
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
+	}
+	
 	public void setUsername(String email) {
 		this.email = email;
 	}
