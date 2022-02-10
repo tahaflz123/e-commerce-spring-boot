@@ -77,8 +77,6 @@ public class ProductService {
 		return products;
 	}
 
-
-
 	public List<Product> getProductsByCategoryAndName(Category category,String q) {
 		if(q != null) {
 			this.logger.info("Param 'q' not null!");
@@ -95,6 +93,23 @@ public class ProductService {
 	public Boolean existsById(Long id) {
 		Boolean exists = this.productRepository.existsById(id);
 		return exists;
+	}
+	
+	public Product updateStock(Long productId,Integer stock) {
+		Product product = this.productRepository.findById(productId).get();
+		User user = this.userService.getLoggedInUser();
+		if(user.getId() != product.getSellerUserId())
+			throw new ProductException("You can't access");
+		
+		if(stock < 0) {
+			throw new ProductException("stock must be greater than 0");
+		}
+		product.setStock(product.getStock() + stock);
+		return this.productRepository.save(product);
+	}
+	
+	public Product saveProduct(Product product) {
+		return this.productRepository.save(product);
 	}
 	
 }
