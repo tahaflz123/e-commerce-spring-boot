@@ -9,6 +9,7 @@ import com.shopping.config.JwtService;
 import com.shopping.entity.user.User;
 import com.shopping.entity.user.UserRole;
 import com.shopping.exception.AuthenticationException;
+import com.shopping.exception.OrderException;
 import com.shopping.model.auth.AuthRequest;
 import com.shopping.model.auth.RegistrationRequest;
 import com.shopping.repository.UserRepository;
@@ -36,6 +37,7 @@ public class UserService {
 		user.setName(request.getName());
 		user.setSurname(request.getSurname());
 		user.setUsername(request.getEmail());
+		user.setWallet(0.00);
 		user.setPassword(this.passwordEncoder.encode(request.getPassword()));
 		user.setUserRole(UserRole.USER);
 		return this.userRepository.save(user).getId();
@@ -67,7 +69,19 @@ public class UserService {
 		return this.userRepository.findById(id).get();
 	}
 	
-	
+	public User saveUser(User user) {
+		return this.userRepository.save(user);
+	}
+
+	public Double uploadWallet(Double amount) {
+		User user = this.getLoggedInUser();
+		if(amount < 0) {
+			throw new OrderException("amount must be greater than 0");
+		}
+		amount += user.getWallet();
+		user.setWallet(amount);
+		return this.userRepository.save(user).getWallet();
+	}
 	
 	
 	
