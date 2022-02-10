@@ -30,6 +30,8 @@ public class User implements UserDetails {
 	
 	private String email;
 	
+	private Double wallet;
+	
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
 	
@@ -55,6 +57,14 @@ public class User implements UserDetails {
 	@Override
 	public String getPassword() {
 		return this.password;
+	}
+	
+	public Double getWallet() {
+		return wallet;
+	}
+	
+	public void setWallet(Double wallet) {
+		this.wallet = wallet;
 	}
 
 	public void setUsername(String email) {
