@@ -1,5 +1,7 @@
 package com.shopping.service;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,6 +40,7 @@ public class UserService {
 		user.setSurname(request.getSurname());
 		user.setUsername(request.getEmail());
 		user.setWallet(0.00);
+		user.setCreatedDate(new Date());
 		user.setPassword(this.passwordEncoder.encode(request.getPassword()));
 		user.setUserRole(UserRole.USER);
 		return this.userRepository.save(user).getId();
