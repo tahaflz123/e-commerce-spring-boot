@@ -4,6 +4,9 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,7 @@ import com.shopping.model.auth.RegistrationRequest;
 import com.shopping.repository.UserRepository;
 
 @Service
-public class UserService {
+public class UserService{
 
 	private BCryptPasswordEncoder passwordEncoder;
 	private UserRepository userRepository;
@@ -38,7 +41,7 @@ public class UserService {
 		User user = new User();
 		user.setName(request.getName());
 		user.setSurname(request.getSurname());
-		user.setUsername(request.getEmail());
+		user.setEmail(request.getEmail());
 		user.setWallet(0.00);
 		user.setCreatedDate(new Date());
 		user.setPassword(this.passwordEncoder.encode(request.getPassword()));
@@ -85,6 +88,7 @@ public class UserService {
 		user.setWallet(amount);
 		return this.userRepository.save(user).getWallet();
 	}
+
 	
 	
 	
