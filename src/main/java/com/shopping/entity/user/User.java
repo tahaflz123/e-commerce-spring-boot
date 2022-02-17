@@ -20,9 +20,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.shopping.entity.order.Order;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table(name = "user")
-public class User implements UserDetails {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -45,136 +52,6 @@ public class User implements UserDetails {
 	private String password;
 	
 	private Date createdDate;
-	
-	private Boolean accountExpired = false;
-	
-	private Boolean locked = false;
-	
-	private Boolean enabled = true;
-	
-	private Boolean credentialsExpired = false;
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		 SimpleGrantedAuthority authority =
-	                new SimpleGrantedAuthority(userRole.name());
-	        return Collections.singletonList(authority);
-	}
-	
-	@Override
-	public String getPassword() {
-		return this.password;
-	}
-	
-	public Double getWallet() {
-		return wallet;
-	}
-	
-	public void setWallet(Double wallet) {
-		this.wallet = wallet;
-	}
-
-	public List<Order> getOrders() {
-		return orders;
-	}
-	
-	public void setOrders(List<Order> orders) {
-		this.orders = orders;
-	}
-	
-	public void setUsername(String email) {
-		this.email = email;
-	}
-	
-	@Override
-	public String getUsername() {
-		return email;
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return this.accountExpired;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return this.locked;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return this.credentialsExpired;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	
-	public UserRole getUserRole() {
-		return userRole;
-	}
-
-
-	public void setUserRole(UserRole userRole) {
-		this.userRole = userRole;
-	}
-
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getSurname() {
-		return surname;
-	}
-
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
-	public Boolean getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setAccountExpired(Boolean accountExpired) {
-		this.accountExpired = accountExpired;
-	}
-
-	public void setLocked(Boolean locked) {
-		this.locked = locked;
-	}
-
-	public void setCredentialsExpired(Boolean credentialsExpired) {
-		this.credentialsExpired = credentialsExpired;
-	}
-	
-	
-	
 	
 	
 }
